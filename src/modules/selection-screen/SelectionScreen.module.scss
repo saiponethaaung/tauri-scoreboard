@@ -1,0 +1,18 @@
+.selectionList {
+  li {
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid #fff;
+    &:last-of-type {
+      border-color: transparent;
+    }
+    a {
+      display: block;
+      outline: none;
+      text-decoration: none;
+      color: #fff;
+      padding: 25px;
+      font-size: 25px;
+    }
+  }
+}

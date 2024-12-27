@@ -1,0 +1,14 @@
+.scoreInfo {
+  display: flex;
+  font-size: 6vw;
+  align-items: center;
+  justify-content: center;
+  gap: 10vw;
+  .scoreTeam {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5vh;
+  }
+}
