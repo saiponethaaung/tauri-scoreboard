@@ -28,6 +28,7 @@ const initialState: ScoreInitData = {
       logo: null,
     },
   },
+  sponsor: [],
 };
 
 export const scoreDisplaySlice = createSlice({
@@ -49,8 +50,33 @@ export const scoreDisplaySlice = createSlice({
     ) => {
       state.team[action.payload.team].score = action.payload.value;
     },
+    updateFoul: (
+      state,
+      action: PayloadAction<{ team: "one" | "two"; value: number }>
+    ) => {
+      state.team[action.payload.team].foul = action.payload.value;
+    },
+    updateFoulTeam: (state, action: PayloadAction<"one" | "two" | null>) => {
+      state.foul = action.payload;
+    },
+    updateSponsor(state, action: PayloadAction<string>) {
+      if (state.sponsor.indexOf(action.payload) === -1) {
+        state.sponsor.push(action.payload);
+      }
+    },
+    removeSponsor(state) {
+      state.sponsor = [];
+    },
   },
 });
 
-export const { setData, updateTime, updateScore } = scoreDisplaySlice.actions;
+export const {
+  setData,
+  updateTime,
+  updateScore,
+  updateFoul,
+  updateFoulTeam,
+  updateSponsor,
+  removeSponsor,
+} = scoreDisplaySlice.actions;
 export default scoreDisplaySlice.reducer;

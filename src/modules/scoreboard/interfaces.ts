@@ -17,6 +17,7 @@ export interface ScoreBoardData {
   foul: null | "one" | "two";
   round: number;
   play: boolean;
+  sponsor: string[];
 }
 
 export interface ScoreInitData extends ScoreBoardData {
@@ -33,7 +34,7 @@ export interface TickerData {
 
 export interface TeamData {
   name: string;
-  logo: null | string | Base64URLString;
+  logo: null | string;
 }
 
 export interface TeamScoreData {

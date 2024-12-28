@@ -19,6 +19,7 @@ const initialState: ScoreBoardData = {
   },
   ticker: 24,
   time: 600,
+  sponsor: [],
 };
 
 export const configSlice = createSlice({
@@ -56,12 +57,38 @@ export const configSlice = createSlice({
         state.team[action.payload.team].score + action.payload.value;
       state.team[action.payload.team].score = score;
     },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(configSlice.actions.stopTicker, (state) => {});
+    tickerReset: (state, action: PayloadAction<number>) => {
+      state.ticker = action.payload;
+    },
+    updateFoul: (
+      state,
+      action: PayloadAction<{ team: "one" | "two"; value: number }>
+    ) => {
+      const score = state.team[action.payload.team].foul + action.payload.value;
+      state.team[action.payload.team].foul = score;
+    },
+    markFoul: (state, action: PayloadAction<"one" | "two" | null>) => {
+      state.foul = action.payload;
+    },
+    updateSponsor(state, action: PayloadAction<string>) {
+      state.sponsor.push(action.payload);
+    },
+    removeSponsor(state) {
+      state.sponsor = [];
+    },
   },
 });
 
-export const { updateData, playTicker, stopTicker, updateTicker, updateScore } =
-  configSlice.actions;
+export const {
+  updateData,
+  playTicker,
+  stopTicker,
+  updateTicker,
+  updateScore,
+  tickerReset,
+  updateFoul,
+  markFoul,
+  updateSponsor,
+  removeSponsor,
+} = configSlice.actions;
 export default configSlice.reducer;

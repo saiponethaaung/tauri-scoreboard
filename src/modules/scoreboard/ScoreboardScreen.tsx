@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen } from "@tauri-apps/api/event";
-import { useEffect, useRef } from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
 import { ShortClock } from "./components/ShortClock";
 import { Round } from "./components/Round";
 import { RemainingTime } from "./components/RemainingTime";
@@ -8,15 +8,25 @@ import styles from "./ScoreboardScreen.module.scss";
 import { RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  markFoul,
   playTicker,
+  removeSponsor,
   stopTicker,
+  tickerReset,
+  updateFoul,
   updateScore,
+  updateSponsor,
   updateTicker,
 } from "./data.state";
 import { ScoreInitData, TickerData } from "./interfaces";
 import { ActionIcon } from "./components/ActionIcon";
 import { ScoreAction } from "./components/ScoreAction";
 import { ScoreInfo } from "./components/ScoreInfo";
+import { ActionRow } from "./components/ActionRow";
+import { DigitDisplay } from "./components/DigitDisplay";
+import { FoulMark } from "./components/FoulAction";
+import whistleIcon from "../../assets/icons/whistle.svg";
+import airhornIcon from "../../assets/icons/airhorn.svg";
 
 export default function () {
   const config = useSelector((state: RootState) => state.scoreConfigReducer);
@@ -79,16 +89,18 @@ export default function () {
   const listenEvent = async () => {
     console.log("called");
 
-    await listen("request_score_init_data", async () => {
-      const initData: ScoreInitData = {
-        ...refData.current,
-        teamInfo: {
-          one: refConfig.current.team.one,
-          two: refConfig.current.team.two,
-        },
-      };
-      await emit("score_init_data", initData);
-    });
+    await listen("request_score_init_data", sendInitData);
+  };
+
+  const sendInitData = async () => {
+    const initData: ScoreInitData = {
+      ...refData.current,
+      teamInfo: {
+        one: refConfig.current.team.one,
+        two: refConfig.current.team.two,
+      },
+    };
+    await emit("score_init_data", initData);
   };
 
   const openNewWindow = async () => {
@@ -150,8 +162,64 @@ export default function () {
     });
   }
 
+  async function teamFoul(team: "one" | "two", value: number) {
+    const newValue = refData.current.team[team].foul + value;
+
+    if (newValue < 0) return;
+
+    dispatch(updateFoul({ team, value }));
+    emit("foul_update", {
+      team,
+      value: refData.current.team[team].foul + value,
+    });
+  }
+
+  async function clockReset(value: number) {
+    dispatch(tickerReset(value));
+    emit("score_ticker", {
+      ticker: value,
+      time: refData.current.time,
+    });
+  }
+
+  async function foulMark(team: "one" | "two" | null) {
+    const value = team === data.foul ? null : team;
+    dispatch(markFoul(value));
+    emit("foul", value);
+  }
+
+  async function sponsorUpdate(e: ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const input = e.target;
+
+    if (input.files) {
+      const files = Array.from(input.files);
+
+      for (const file of files) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const data = e.target?.result as string;
+          emit("sponsor", data);
+          dispatch(updateSponsor(data));
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  async function cleanSponsor() {
+    emit("clean_sponsor");
+    dispatch(removeSponsor());
+  }
+
+  async function updateTeam() {
+    // let team1 = window.prompt("Enter Team 1 Name", refConfig.current.team.one.name);
+  }
+
   return (
-    <div>
+    <div className={styles.sbContainer}>
       <div className={styles.firstRow}>
         <ShortClock value={data.ticker} />
         <div className={styles.timeAction}>
@@ -187,23 +255,118 @@ export default function () {
         />
         <ScoreAction callback={(v) => teamScore("two", v)} />
       </div>
-      <div>
-        <div>
-          <div onClick={airHorn}>bell</div>
-          <div onClick={whistle}>whistle</div>
+      <div className={styles.thirdRowRoot}>
+        <div className={styles.thirdRow}>
+          <ActionRow>
+            <ActionIcon
+              callback={() => {
+                airHorn();
+              }}
+            >
+              <img src={airhornIcon} />
+            </ActionIcon>
+            <ActionIcon
+              callback={() => {
+                whistle();
+              }}
+            >
+              <img src={whistleIcon} />
+            </ActionIcon>
+          </ActionRow>
+          <div>
+            <FoulMark team={data.foul} callback={foulMark} />
+            <ActionRow>
+              <ActionRow>
+                <ActionIcon
+                  callback={() => {
+                    teamFoul("one", 1);
+                  }}
+                >
+                  +
+                </ActionIcon>
+                <DigitDisplay
+                  color="yellow"
+                  fontSize="5vw"
+                  value={data.team.one.foul}
+                  singleDigit={data.team.one.foul < 10}
+                />
+                <ActionIcon
+                  callback={() => {
+                    teamFoul("one", -1);
+                  }}
+                >
+                  -
+                </ActionIcon>
+              </ActionRow>
+              <div style={{ fontSize: "3vw" }}>X</div>
+              <ActionRow>
+                <ActionIcon
+                  callback={() => {
+                    teamFoul("two", 1);
+                  }}
+                >
+                  +
+                </ActionIcon>
+                <DigitDisplay
+                  color="yellow"
+                  fontSize="5vw"
+                  value={data.team.two.foul}
+                  singleDigit={data.team.two.foul < 10}
+                />
+                <ActionIcon
+                  callback={() => {
+                    teamFoul("two", -1);
+                  }}
+                >
+                  -
+                </ActionIcon>
+              </ActionRow>
+            </ActionRow>
+          </div>
+          <ActionRow>
+            <ActionIcon callback={() => clockReset(14)}>14</ActionIcon>
+            <ActionIcon callback={() => clockReset(config.shortClock)}>
+              {config.shortClock}
+            </ActionIcon>
+          </ActionRow>
         </div>
-        <div>
-          <div>foul</div>
-          <div>foul counter</div>
-        </div>
-        <div>
-          <div>14</div>
-          <div>{config.shortClock}</div>
+        <div className={styles.actionCon}>
+          <button onClick={openNewWindow} type="button">
+            Display Screen
+          </button>
+          <button onClick={cleanSponsor} type="button">
+            Clean Sponsors
+          </button>
+          <button type="button">
+            <label>
+              Upload Sponsors
+              <input
+                type="file"
+                accept="image/png"
+                multiple
+                style={{ display: "none" }}
+                onChange={sponsorUpdate}
+              />
+            </label>
+          </button>
+          <button onClick={updateTeam} type="button">
+            Update Team
+          </button>
+          <button onClick={() => {}} type="button">
+            Update Quartar
+          </button>
+          <button onClick={() => {}} type="button">
+            Update Short Clock
+          </button>
+          <button onClick={() => {}} type="button">
+            Update Duration
+          </button>
+          <button onClick={() => {}} type="button">
+            Reset
+          </button>
         </div>
       </div>
-      <button onClick={openNewWindow} type="button">
-        Open
-      </button>
+      {/* <div className={editCon}></div> */}
     </div>
   );
 }

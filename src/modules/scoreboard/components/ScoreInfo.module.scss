@@ -10,5 +10,9 @@
     align-items: center;
     justify-content: center;
     gap: 5vh;
+    &Name {
+      font-family: "text"!important;
+      font-size: 3vw;
+    }
   }
 }

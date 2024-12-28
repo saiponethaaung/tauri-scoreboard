@@ -13,3 +13,47 @@
   justify-content: space-between;
   padding: 30px;
 }
+
+.thirdRowRoot {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  .thirdRow {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px;
+  }
+
+  .actionCon {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1vw;
+    padding: 30px;
+    * {
+      font-size: 1vw;
+      padding: 1vw;
+      border-radius: 5%;
+      border: none;
+      cursor: pointer;
+      background-color: #fff;
+      font-family: "text" !important;
+    }
+  }
+}
+
+.sbContainer {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.foulCounter {
+  font-size: 3vw;
+  color: yellow;
+}

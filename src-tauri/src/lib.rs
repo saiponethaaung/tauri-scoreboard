@@ -1,33 +1,8 @@
-use lazy_static::lazy_static;
-use rodio::Sink;
 use std::env::current_dir;
 use std::fs::File;
 use std::io::BufReader;
 use std::thread::{self, park_timeout};
 use tauri::AppHandle;
-
-// lazy_static! {
-//     static ref WISTLE_SINK: Sink = {
-//         let dir = current_dir().unwrap();
-//         let audio = dir.display().to_string() + "/audios/whistle.mp3";
-//         let file = File::open(audio).unwrap();
-//         let source = rodio::Decoder::new(BufReader::new(file)).unwrap();
-//         let (_stream, stream_handle) = rodio::OutputStream::try_default().unwrap();
-//         let sink = rodio::Sink::try_new(&stream_handle).unwrap();
-//         sink.append(source);
-//         sink
-//     };
-//     static ref AIRHORN_SINK: Sink = {
-//         let dir = current_dir().unwrap();
-//         let audio = dir.display().to_string() + "/audios/air_horn.mp3";
-//         let file = File::open(audio).unwrap();
-//         let source = rodio::Decoder::new(BufReader::new(file)).unwrap();
-//         let (_stream, stream_handle) = rodio::OutputStream::try_default().unwrap();
-//         let sink = rodio::Sink::try_new(&stream_handle).unwrap();
-//         sink.append(source);
-//         sink
-//     };
-// }
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]

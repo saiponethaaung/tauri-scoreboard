@@ -21,6 +21,7 @@ export const configSlice = createSlice({
   name: "scoreConfig",
   initialState,
   reducers: {
+    // @ts-ignore
     updateConfig: (state, action: PayloadAction<ScoreBoardConfigData>) => {
       state = action.payload;
     },

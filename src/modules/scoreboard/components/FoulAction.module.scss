@@ -1,0 +1,19 @@
+.foulMarkCon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1vw;
+  margin-bottom: 2vw;
+  font-size: 3vw;
+  font-family: "text" !important;
+  div {
+    font-family: "text" !important;
+  }
+  button {
+    font-size: 4vw;
+    background-color: transparent;
+    border: none;
+    text-decoration: none;
+    color: pointer;
+  }
+}

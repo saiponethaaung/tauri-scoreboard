@@ -5,4 +5,27 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
+
+  .fouls {
+  }
+
+  .scoreInfoCon {
+    padding: 30px;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    .sponsorCon {
+      width: 20vw;
+      display: flex;
+      flex-direction: column;
+      gap: 1vw;
+      img {
+        width: 80%;
+      }
+    }
+    .scoreCon {
+      width: 60vw;
+    }
+  }
 }
