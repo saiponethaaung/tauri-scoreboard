@@ -36,6 +36,7 @@ import { updateShortClock, updateTeam } from "./config.state";
 import { QuartarEditCon } from "./edit-component/QuartarEditCon";
 import { ShortClockEditCon } from "./edit-component/ShortClockEditCon";
 import { DurationEditCon } from "./edit-component/DurationClockEditCon";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 export default function () {
   const config = useSelector((state: RootState) => state.scoreConfigReducer);
@@ -121,7 +122,20 @@ export default function () {
   };
 
   const openNewWindow = async () => {
-    await invoke("greet");
+    // await invoke("greet");
+    const webview = new WebviewWindow("custom", { url: "/scoreboard/projection" });
+
+    // since the webview window is created asynchronously,
+    // Tauri emits the `tauri://created` and `tauri://error` to notify you of the creation response
+    webview.once("tauri://created", () => {
+      // webview window successfully created
+      console.log("Webview window successfully created");
+    });
+
+    webview.once("tauri://error", (e) => {
+      // an error occurred during webview window creation
+      console.error("Error creating webview window:", e);
+    });
   };
 
   const stop = async () => {
