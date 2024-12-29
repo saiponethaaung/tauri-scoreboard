@@ -35,6 +35,12 @@ export const configSlice = createSlice({
       state.ticker = action.payload;
       state.time--;
     },
+    updateTickerOnly: (state, action: PayloadAction<number>) => {
+      state.ticker = action.payload;
+    },
+    updateTimeOnly: (state, action: PayloadAction<number>) => {
+      state.time = action.payload;
+    },
     playTicker: (state, action: PayloadAction<number>) => {
       if (state.ticker === 0) {
         state.ticker = action.payload;
@@ -76,6 +82,21 @@ export const configSlice = createSlice({
     removeSponsor(state) {
       state.sponsor = [];
     },
+    updateRound(state, action: PayloadAction<number>) {
+      state.round = action.payload;
+    },
+    resetData(state, action: PayloadAction<number>) {
+      state.foul = null;
+      state.play = false;
+      state.round = 1;
+      state.team.one.foul = 0;
+      state.team.one.score = 0;
+      state.team.two.score = 0;
+      state.team.two.score = 0;
+      state.ticker = action.payload;
+      state.time = 600;
+      state.sponsor = [];
+    },
   },
 });
 
@@ -90,5 +111,9 @@ export const {
   markFoul,
   updateSponsor,
   removeSponsor,
+  updateRound,
+  updateTickerOnly,
+  updateTimeOnly,
+  resetData,
 } = configSlice.actions;
 export default configSlice.reducer;

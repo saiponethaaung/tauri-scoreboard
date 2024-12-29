@@ -12,8 +12,10 @@ import {
   setData,
   updateFoul,
   updateFoulTeam,
+  updateRound,
   updateScore,
   updateSponsor,
+  updateTeam,
   updateTime,
 } from "./ScoreProjectionScreen.state";
 import { ScoreInfo } from "../components/ScoreInfo";
@@ -64,6 +66,12 @@ export default function () {
     listen("foul", (d: Event<"one" | "two" | null>) => {
       dispatch(updateFoulTeam(d.payload));
     });
+    listen("team_update", (d: Event<{ teamOne: string; teamTwo: string }>) => {
+      dispatch(updateTeam(d.payload));
+    });
+    listen("round_update", (d: Event<number>) => {
+      dispatch(updateRound(d.payload));
+    });
   };
 
   const leftSponsor = () => {
@@ -78,19 +86,22 @@ export default function () {
     <div className={styles.scoreProjectionScreen}>
       <div className={styles.firstRow}>
         <ShortClock value={data.ticker} />
-        <div className={styles.timeAction}>
-          <RemainingTime value={data.time} />
-        </div>
-        <Round value={data.round} />
-      </div>
-      <div className={styles.scoreInfoCon}>
         <div className={styles.sponsorCon}>
           {leftSponsor().map((s) => (
             <img src={s} />
           ))}
         </div>
-        <div className={styles.scoreCon}>
-          <ScoreInfo
+        <div className={styles.timeAction}>
+          <RemainingTime value={data.time} />
+        </div>
+        <div className={styles.sponsorCon}>
+          {rightSponsor().map((s) => (
+            <img src={s} />
+          ))}
+        </div>
+        <Round value={data.round} />
+      </div>
+      <ScoreInfo
             team={[
               {
                 name: data.teamInfo.one.name,
@@ -102,13 +113,6 @@ export default function () {
               },
             ]}
           />
-        </div>
-        <div className={styles.sponsorCon}>
-          {rightSponsor().map((s) => (
-            <img src={s} />
-          ))}
-        </div>
-      </div>
       <div className={styles.fouls}>
         <FoulMark team={data.foul} callback={() => {}} />
         <ActionRow>

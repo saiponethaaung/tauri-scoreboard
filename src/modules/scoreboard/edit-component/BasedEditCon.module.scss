@@ -1,0 +1,51 @@
+.baseEditCon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  .editCon {
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    min-width: 30vw;
+    * {
+      color: #000;
+      font-family: "text" !important;
+    }
+
+    .editHeading {
+      border-bottom: 2px solid #e2e2e2;
+      padding: 10px 20px;
+    }
+
+    .editContent {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      flex-direction: column;
+      gap: 20px;
+      > * {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        width: 100%;
+      }
+    }
+
+    .editFooter {
+      border-top: 2px solid #e2e2e2;
+      padding: 10px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 20px;
+    }
+  }
+}

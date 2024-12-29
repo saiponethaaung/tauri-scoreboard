@@ -67,6 +67,19 @@ export const scoreDisplaySlice = createSlice({
     removeSponsor(state) {
       state.sponsor = [];
     },
+    updateTeam: (
+      state,
+      action: PayloadAction<{ teamOne: string; teamTwo: string }>
+    ) => {
+      state.teamInfo.one.name = action.payload.teamOne;
+      state.teamInfo.two.name = action.payload.teamTwo;
+    },
+    updateRound: (
+      state,
+      action: PayloadAction<number>
+    ) => {
+      state.round = action.payload;
+    },
   },
 });
 
@@ -78,5 +91,7 @@ export const {
   updateFoulTeam,
   updateSponsor,
   removeSponsor,
+  updateTeam,
+  updateRound
 } = scoreDisplaySlice.actions;
 export default scoreDisplaySlice.reducer;

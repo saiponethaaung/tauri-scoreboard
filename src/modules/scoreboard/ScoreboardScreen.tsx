@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen } from "@tauri-apps/api/event";
-import { ChangeEvent, useEffect, useRef } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { ShortClock } from "./components/ShortClock";
 import { Round } from "./components/Round";
 import { RemainingTime } from "./components/RemainingTime";
@@ -11,12 +11,16 @@ import {
   markFoul,
   playTicker,
   removeSponsor,
+  resetData,
   stopTicker,
   tickerReset,
   updateFoul,
+  updateRound,
   updateScore,
   updateSponsor,
   updateTicker,
+  updateTickerOnly,
+  updateTimeOnly,
 } from "./data.state";
 import { ScoreInitData, TickerData } from "./interfaces";
 import { ActionIcon } from "./components/ActionIcon";
@@ -27,37 +31,46 @@ import { DigitDisplay } from "./components/DigitDisplay";
 import { FoulMark } from "./components/FoulAction";
 import whistleIcon from "../../assets/icons/whistle.svg";
 import airhornIcon from "../../assets/icons/airhorn.svg";
+import { TeamEditCon } from "./edit-component/TeamEditCon";
+import { updateShortClock, updateTeam } from "./config.state";
+import { QuartarEditCon } from "./edit-component/QuartarEditCon";
+import { ShortClockEditCon } from "./edit-component/ShortClockEditCon";
+import { DurationEditCon } from "./edit-component/DurationClockEditCon";
 
 export default function () {
   const config = useSelector((state: RootState) => state.scoreConfigReducer);
   const data = useSelector((state: RootState) => state.scoreDataReducer);
   const refData = useRef(data);
   const refConfig = useRef(config);
+  const [edit, setEdit] = useState("");
+  const refEdit = useRef(edit);
   const dispatch = useDispatch();
 
   const keyPressListener = (e: KeyboardEvent) => {
-    e.preventDefault();
-    switch (e.key.toLowerCase()) {
-      case "w":
-        whistle();
-        break;
+    if (refEdit.current === "") {
+      e.preventDefault();
+      switch (e.key.toLowerCase()) {
+        case "w":
+          whistle();
+          break;
 
-      case "a":
-        airHorn();
-        break;
+        case "a":
+          airHorn();
+          break;
 
-      case "p":
-        console.log("play trigger", refData.current.play);
-        if (refData.current.play) {
-          console.log("stop ticker2");
-          stop();
-        } else {
-          play();
-        }
-        break;
+        case "p":
+          console.log("play trigger", refData.current.play);
+          if (refData.current.play) {
+            console.log("stop ticker2");
+            stop();
+          } else {
+            play();
+          }
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
     }
   };
 
@@ -68,6 +81,10 @@ export default function () {
   useEffect(() => {
     refConfig.current = config;
   }, [config]);
+
+  useEffect(() => {
+    refEdit.current = edit;
+  }, [edit]);
 
   useEffect(() => {
     listenEvent();
@@ -214,8 +231,64 @@ export default function () {
     dispatch(removeSponsor());
   }
 
-  async function updateTeam() {
-    // let team1 = window.prompt("Enter Team 1 Name", refConfig.current.team.one.name);
+  async function updateTeamData(team1: string, team2: string) {
+    if (team1 === "" || team2 === "") return;
+
+    dispatch(updateTeam({ teamOne: team1, teamTwo: team2 }));
+    emit("team_update", { teamOne: team1, teamTwo: team2 });
+
+    setEdit("");
+  }
+
+  async function updateRoundData(value: string) {
+    if (value === "") return;
+    const num = parseInt(value);
+    if (isNaN(num)) return;
+    dispatch(updateRound(num));
+    emit("round_update", num);
+
+    setEdit("");
+  }
+
+  async function updateShortClockData(value: string) {
+    if (value === "") return;
+    const num = parseInt(value);
+    if (isNaN(num)) return;
+    dispatch(updateShortClock(num));
+
+    const tickerData: TickerData = {
+      ticker: num,
+      time: data.time,
+    };
+
+    emit("score_ticker", tickerData);
+    dispatch(updateTickerOnly(num));
+
+    setEdit("");
+  }
+
+  async function updateDurationData(value: string) {
+    if (value === "") return;
+    const num = parseInt(value);
+    if (isNaN(num)) return;
+
+    const tickerData: TickerData = {
+      ticker: data.ticker,
+      time: num,
+    };
+
+    emit("score_ticker", tickerData);
+    dispatch(updateTimeOnly(num));
+
+    setEdit("");
+  }
+
+  async function reset() {
+    stop();
+    dispatch(resetData(config.shortClock));
+    setTimeout(() => {
+      sendInitData();
+    }, 1000);
   }
 
   return (
@@ -349,24 +422,48 @@ export default function () {
               />
             </label>
           </button>
-          <button onClick={updateTeam} type="button">
+          <button onClick={() => setEdit("team")} type="button">
             Update Team
           </button>
-          <button onClick={() => {}} type="button">
+          <button onClick={() => setEdit("quartar")} type="button">
             Update Quartar
           </button>
-          <button onClick={() => {}} type="button">
+          <button onClick={() => setEdit("shortClock")} type="button">
             Update Short Clock
           </button>
-          <button onClick={() => {}} type="button">
+          <button onClick={() => setEdit("duration")} type="button">
             Update Duration
           </button>
-          <button onClick={() => {}} type="button">
+          <button onClick={reset} type="button">
             Reset
           </button>
         </div>
       </div>
-      {/* <div className={editCon}></div> */}
+      {edit === "team" && (
+        <TeamEditCon
+          team1={config.team.one.name}
+          team2={config.team.two.name}
+          callback={updateTeamData}
+        />
+      )}
+      {edit === "quartar" && (
+        <QuartarEditCon
+          value={data.round.toString()}
+          callback={updateRoundData}
+        />
+      )}
+      {edit === "shortClock" && (
+        <ShortClockEditCon
+          value={config.shortClock.toString()}
+          callback={updateShortClockData}
+        />
+      )}
+      {edit === "duration" && (
+        <DurationEditCon
+          value={data.time.toString()}
+          callback={updateDurationData}
+        />
+      )}
     </div>
   );
 }

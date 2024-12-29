@@ -25,8 +25,19 @@ export const configSlice = createSlice({
     updateConfig: (state, action: PayloadAction<ScoreBoardConfigData>) => {
       state = action.payload;
     },
+    updateTeam: (
+      state,
+      action: PayloadAction<{ teamOne: string; teamTwo: string }>
+    ) => {
+      state.team.one.name = action.payload.teamOne;
+      state.team.two.name = action.payload.teamTwo;
+    },
+    updateShortClock: (state, action: PayloadAction<number>) => {
+      state.shortClock = action.payload;
+    },
   },
 });
 
-export const { updateConfig } = configSlice.actions;
+export const { updateConfig, updateTeam, updateShortClock } =
+  configSlice.actions;
 export default configSlice.reducer;
