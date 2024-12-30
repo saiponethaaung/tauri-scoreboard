@@ -54,6 +54,7 @@ export default function () {
   const keyPressListener = (e: KeyboardEvent) => {
     if (refEdit.current === "") {
       e.preventDefault();
+      console.log("key", e.key.toLocaleLowerCase());
       switch (e.key.toLowerCase()) {
         case "w":
           whistle();
@@ -63,10 +64,8 @@ export default function () {
           airHorn();
           break;
 
-        case "p":
-          console.log("play trigger", refData.current.play);
+        case " ":
           if (refData.current.play) {
-            console.log("stop ticker2");
             stop();
           } else {
             play();
@@ -154,12 +153,11 @@ export default function () {
   };
 
   const ticker = async () => {
-    console.log("play", refData.current.play, data.play);
     if (!refData.current.play) return;
 
     setTimeout(() => {
       const tickerValue = refData.current.ticker - 1;
-      console.log("tickerValue", tickerValue);
+    
       if (tickerValue >= 0) {
         if (tickerValue === 0) {
           whistle();
