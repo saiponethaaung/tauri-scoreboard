@@ -11,6 +11,7 @@
     "opener:default",
     "dialog:default",
     "core:webview:allow-create-webview-window",
-    "core:window:allow-is-fullscreen"
+    "core:window:allow-is-fullscreen",
+    "core:window:allow-set-fullscreen"
   ]
 }

@@ -22,6 +22,7 @@ import { ScoreInfo } from "../components/ScoreInfo";
 import { ActionRow } from "../components/ActionRow";
 import { DigitDisplay } from "../components/DigitDisplay";
 import { FoulMark } from "../components/FoulAction";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 export default function () {
   const data = useSelector((state: RootState) => state.scoreDisplayReducer);
@@ -31,7 +32,30 @@ export default function () {
   useEffect(() => {
     listenEvent();
     requestData();
+
+    window.addEventListener("keypress", keyPressListener);
+
+    return () => {
+      window.removeEventListener("keypress", keyPressListener);
+    };
   }, []);
+
+
+  const keyPressListener = (e: KeyboardEvent) => {
+    switch (e.key.toLowerCase()) {
+      case "f":
+        fullscreen();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const fullscreen = async () => {
+    const web = WebviewWindow.getCurrent();
+    const isFullscreen = await web.isFullscreen()
+    web.setFullscreen(!isFullscreen);
+  }
 
   const requestData = async () => {
     emit("request_score_init_data");
@@ -114,7 +138,7 @@ export default function () {
         ]}
       />
       <div className={styles.fouls}>
-        <FoulMark team={data.foul} callback={() => {}} />
+        <FoulMark team={data.foul} callback={() => { }} />
         <ActionRow>
           <ActionRow>
             <DigitDisplay
