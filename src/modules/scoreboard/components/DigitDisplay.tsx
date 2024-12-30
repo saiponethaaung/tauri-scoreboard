@@ -11,7 +11,7 @@ export function DigitDisplay(props: IProps) {
     <div className={styles.digitDisplayRootCon}>
       <div
         className={styles.digitDisplayCon}
-        style={{ "--fontSize": props.fontSize ?? "8vw" } as React.CSSProperties}
+        style={{ "--fontSize": props.fontSize ?? "12vh" } as React.CSSProperties}
       >
         <div className={styles.ddPlaceholder}>0</div>
         <div
@@ -26,7 +26,7 @@ export function DigitDisplay(props: IProps) {
         <div
           className={styles.digitDisplayCon}
           style={
-            { "--fontSize": props.fontSize ?? "8vw" } as React.CSSProperties
+            { "--fontSize": props.fontSize ?? "12vh" } as React.CSSProperties
           }
         >
           <div className={styles.ddPlaceholder}>0</div>

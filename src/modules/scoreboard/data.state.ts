@@ -1,4 +1,4 @@
-import { ScoreBoardData, TickerData } from "./interfaces";
+import { ScoreBoardData, Sponsor, TickerData } from "./interfaces";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { emit } from "@tauri-apps/api/event";
@@ -76,7 +76,7 @@ export const configSlice = createSlice({
     markFoul: (state, action: PayloadAction<"one" | "two" | null>) => {
       state.foul = action.payload;
     },
-    updateSponsor(state, action: PayloadAction<string>) {
+    updateSponsor(state, action: PayloadAction<Sponsor>) {
       state.sponsor.push(action.payload);
     },
     removeSponsor(state) {

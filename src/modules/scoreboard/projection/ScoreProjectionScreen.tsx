@@ -1,6 +1,6 @@
 import { emit, Event, listen } from "@tauri-apps/api/event";
 import { useEffect } from "react";
-import { ScoreInitData, TickerData } from "../interfaces";
+import { ScoreInitData, Sponsor, TickerData } from "../interfaces";
 import styles from "./ScoreProjectionScreen.module.scss";
 import { ShortClock } from "../components/ShortClock";
 import { RemainingTime } from "../components/RemainingTime";
@@ -50,7 +50,7 @@ export default function () {
         dispatch(updateScore(d.payload));
       }
     );
-    listen("sponsor", (d: Event<string>) => {
+    listen("sponsor", (d: Event<Sponsor>) => {
       console.log("sponsor added");
       dispatch(updateSponsor(d.payload));
     });
@@ -75,11 +75,11 @@ export default function () {
   };
 
   const leftSponsor = () => {
-    return data.sponsor.filter((_, i) => i % 2 !== 0);
+    return data.sponsor.filter((_, i) => i % 2 == 0);
   };
 
   const rightSponsor = () => {
-    return data.sponsor.filter((_, i) => i % 2 === 0);
+    return data.sponsor.filter((_, i) => i % 2 !== 0);
   };
 
   return (
@@ -88,7 +88,7 @@ export default function () {
         <ShortClock value={data.ticker} />
         <div className={styles.sponsorCon}>
           {leftSponsor().map((s) => (
-            <img src={s} />
+            <img src={s.src} />
           ))}
         </div>
         <div className={styles.timeAction}>
@@ -96,39 +96,39 @@ export default function () {
         </div>
         <div className={styles.sponsorCon}>
           {rightSponsor().map((s) => (
-            <img src={s} />
+            <img src={s.src} />
           ))}
         </div>
         <Round value={data.round} />
       </div>
       <ScoreInfo
-            team={[
-              {
-                name: data.teamInfo.one.name,
-                score: data.team.one.score,
-              },
-              {
-                name: data.teamInfo.two.name,
-                score: data.team.two.score,
-              },
-            ]}
-          />
+        team={[
+          {
+            name: data.teamInfo.one.name,
+            score: data.team.one.score,
+          },
+          {
+            name: data.teamInfo.two.name,
+            score: data.team.two.score,
+          },
+        ]}
+      />
       <div className={styles.fouls}>
         <FoulMark team={data.foul} callback={() => {}} />
         <ActionRow>
           <ActionRow>
             <DigitDisplay
               color="yellow"
-              fontSize="5vw"
+              fontSize="8vh"
               value={data.team.one.foul}
               singleDigit={data.team.one.foul < 10}
             />
           </ActionRow>
-          <div style={{ fontSize: "3vw" }}>X</div>
+          <div style={{ fontSize: "6vh" }}>X</div>
           <ActionRow>
             <DigitDisplay
               color="yellow"
-              fontSize="5vw"
+              fontSize="8vh"
               value={data.team.two.foul}
               singleDigit={data.team.two.foul < 10}
             />

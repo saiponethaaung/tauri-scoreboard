@@ -4,6 +4,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: ScoreBoardConfigData = {
   duration: 600,
+  configShortClock: 24,
   shortClock: 24,
   team: {
     one: {
@@ -35,9 +36,17 @@ export const configSlice = createSlice({
     updateShortClock: (state, action: PayloadAction<number>) => {
       state.shortClock = action.payload;
     },
+    updateConfigShortClock: (state, action: PayloadAction<number>) => {
+      state.configShortClock = action.payload;
+      state.shortClock = action.payload;
+    },
   },
 });
 
-export const { updateConfig, updateTeam, updateShortClock } =
-  configSlice.actions;
+export const {
+  updateConfig,
+  updateTeam,
+  updateShortClock,
+  updateConfigShortClock,
+} = configSlice.actions;
 export default configSlice.reducer;

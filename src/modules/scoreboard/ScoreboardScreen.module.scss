@@ -31,11 +31,11 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 1vw;
+    gap: 1vh;
     padding: 30px;
     * {
       font-size: 1vw;
-      padding: 1vw;
+      padding: 1vh;
       border-radius: 5%;
       border: none;
       cursor: pointer;
@@ -54,6 +54,6 @@
 }
 
 .foulCounter {
-  font-size: 3vw;
+  font-size: 3vh;
   color: yellow;
 }

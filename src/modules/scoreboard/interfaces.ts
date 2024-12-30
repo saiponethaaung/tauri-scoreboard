@@ -1,10 +1,16 @@
 export interface ScoreBoardConfigData {
+  configShortClock: number;
   shortClock: number;
   duration: number;
   team: {
     one: TeamData;
     two: TeamData;
   };
+}
+
+export interface Sponsor {
+  timestamp: string;
+  src: string;
 }
 
 export interface ScoreBoardData {
@@ -17,7 +23,7 @@ export interface ScoreBoardData {
   foul: null | "one" | "two";
   round: number;
   play: boolean;
-  sponsor: string[];
+  sponsor: Sponsor[];
 }
 
 export interface ScoreInitData extends ScoreBoardData {

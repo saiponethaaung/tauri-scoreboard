@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { ScoreInitData, TickerData } from "../interfaces";
+import { ScoreInitData, Sponsor, TickerData } from "../interfaces";
 
 const initialState: ScoreInitData = {
   ticker: 0,
@@ -59,8 +59,12 @@ export const scoreDisplaySlice = createSlice({
     updateFoulTeam: (state, action: PayloadAction<"one" | "two" | null>) => {
       state.foul = action.payload;
     },
-    updateSponsor(state, action: PayloadAction<string>) {
-      if (state.sponsor.indexOf(action.payload) === -1) {
+    updateSponsor(state, action: PayloadAction<Sponsor>) {
+      const timestamps: string[] = [];
+      state.sponsor.forEach((s) => {
+        timestamps.push(s.timestamp);
+      });
+      if (timestamps.indexOf(action.payload.timestamp) === -1) {
         state.sponsor.push(action.payload);
       }
     },
@@ -74,10 +78,7 @@ export const scoreDisplaySlice = createSlice({
       state.teamInfo.one.name = action.payload.teamOne;
       state.teamInfo.two.name = action.payload.teamTwo;
     },
-    updateRound: (
-      state,
-      action: PayloadAction<number>
-    ) => {
+    updateRound: (state, action: PayloadAction<number>) => {
       state.round = action.payload;
     },
   },
@@ -92,6 +93,6 @@ export const {
   updateSponsor,
   removeSponsor,
   updateTeam,
-  updateRound
+  updateRound,
 } = scoreDisplaySlice.actions;
 export default scoreDisplaySlice.reducer;

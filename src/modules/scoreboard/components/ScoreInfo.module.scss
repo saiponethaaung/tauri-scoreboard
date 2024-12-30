@@ -1,9 +1,9 @@
 .scoreInfo {
   display: flex;
-  font-size: 6vw;
+  font-size: 9vh;
   align-items: center;
   justify-content: center;
-  gap: 10vw;
+  gap: 10vh;
   .scoreTeam {
     display: flex;
     flex-direction: column;
@@ -11,8 +11,8 @@
     justify-content: center;
     gap: 5vh;
     &Name {
-      font-family: "text"!important;
-      font-size: 3vw;
+      font-family: "text" !important;
+      font-size: 6vh;
     }
   }
 }

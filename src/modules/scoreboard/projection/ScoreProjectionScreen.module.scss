@@ -5,6 +5,7 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
+  padding: 20px 50px 50px;
 
   .fouls {
   }
@@ -29,7 +30,7 @@
     justify-content: space-between;
 
     .scoreCon {
-      width: 60vw;
+      width: 60vh;
     }
   }
 }

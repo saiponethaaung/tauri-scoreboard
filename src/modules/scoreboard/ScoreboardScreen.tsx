@@ -32,7 +32,11 @@ import { FoulMark } from "./components/FoulAction";
 import whistleIcon from "../../assets/icons/whistle.svg";
 import airhornIcon from "../../assets/icons/airhorn.svg";
 import { TeamEditCon } from "./edit-component/TeamEditCon";
-import { updateShortClock, updateTeam } from "./config.state";
+import {
+  updateConfigShortClock,
+  updateShortClock,
+  updateTeam,
+} from "./config.state";
 import { QuartarEditCon } from "./edit-component/QuartarEditCon";
 import { ShortClockEditCon } from "./edit-component/ShortClockEditCon";
 import { DurationEditCon } from "./edit-component/DurationClockEditCon";
@@ -123,7 +127,9 @@ export default function () {
 
   const openNewWindow = async () => {
     // await invoke("greet");
-    const webview = new WebviewWindow("custom", { url: "/scoreboard/projection" });
+    const webview = new WebviewWindow("custom", {
+      url: "/scoreboard/projection",
+    });
 
     // since the webview window is created asynchronously,
     // Tauri emits the `tauri://created` and `tauri://error` to notify you of the creation response
@@ -144,7 +150,7 @@ export default function () {
   };
 
   const play = async () => {
-    await dispatch(playTicker(config.shortClock));
+    await dispatch(playTicker(refConfig.current.shortClock));
   };
 
   const ticker = async () => {
@@ -207,6 +213,7 @@ export default function () {
 
   async function clockReset(value: number) {
     dispatch(tickerReset(value));
+    dispatch(updateShortClock(value));
     emit("score_ticker", {
       ticker: value,
       time: refData.current.time,
@@ -231,8 +238,12 @@ export default function () {
 
         reader.onload = (e) => {
           const data = e.target?.result as string;
-          emit("sponsor", data);
-          dispatch(updateSponsor(data));
+          const sponsor = {
+            timestamp: (new Date().getTime() + 1).toString(),
+            src: data,
+          };
+          emit("sponsor", sponsor);
+          dispatch(updateSponsor(sponsor));
         };
 
         reader.readAsDataURL(file);
@@ -268,7 +279,7 @@ export default function () {
     if (value === "") return;
     const num = parseInt(value);
     if (isNaN(num)) return;
-    dispatch(updateShortClock(num));
+    dispatch(updateConfigShortClock(num));
 
     const tickerData: TickerData = {
       ticker: num,
@@ -310,17 +321,6 @@ export default function () {
       <div className={styles.firstRow}>
         <ShortClock value={data.ticker} />
         <div className={styles.timeAction}>
-          <div
-            onClick={() => {
-              if (data.play) {
-                stop();
-              } else {
-                play();
-              }
-            }}
-          >
-            {refData.current.play ? "Pause" : "Play"}
-          </div>
           <RemainingTime value={data.time} />
         </div>
         <Round value={data.round} />
@@ -361,6 +361,22 @@ export default function () {
             </ActionIcon>
           </ActionRow>
           <div>
+            <div
+              onClick={() => {
+                if (data.play) {
+                  stop();
+                } else {
+                  play();
+                }
+              }}
+              style={{
+                fontSize: "6vh",
+                cursor: "pointer",
+                textAlign: "center",
+              }}
+            >
+              {data.play ? "Pause" : "Play"}
+            </div>
             <FoulMark team={data.foul} callback={foulMark} />
             <ActionRow>
               <ActionRow>
@@ -373,7 +389,7 @@ export default function () {
                 </ActionIcon>
                 <DigitDisplay
                   color="yellow"
-                  fontSize="5vw"
+                  fontSize="8vh"
                   value={data.team.one.foul}
                   singleDigit={data.team.one.foul < 10}
                 />
@@ -385,7 +401,7 @@ export default function () {
                   -
                 </ActionIcon>
               </ActionRow>
-              <div style={{ fontSize: "3vw" }}>X</div>
+              <div style={{ fontSize: "6vh" }}>X</div>
               <ActionRow>
                 <ActionIcon
                   callback={() => {
@@ -396,7 +412,7 @@ export default function () {
                 </ActionIcon>
                 <DigitDisplay
                   color="yellow"
-                  fontSize="5vw"
+                  fontSize="8vh"
                   value={data.team.two.foul}
                   singleDigit={data.team.two.foul < 10}
                 />
@@ -412,8 +428,8 @@ export default function () {
           </div>
           <ActionRow>
             <ActionIcon callback={() => clockReset(14)}>14</ActionIcon>
-            <ActionIcon callback={() => clockReset(config.shortClock)}>
-              {config.shortClock}
+            <ActionIcon callback={() => clockReset(config.configShortClock)}>
+              {config.configShortClock}
             </ActionIcon>
           </ActionRow>
         </div>
@@ -468,7 +484,7 @@ export default function () {
       )}
       {edit === "shortClock" && (
         <ShortClockEditCon
-          value={config.shortClock.toString()}
+          value={config.configShortClock.toString()}
           callback={updateShortClockData}
         />
       )}
