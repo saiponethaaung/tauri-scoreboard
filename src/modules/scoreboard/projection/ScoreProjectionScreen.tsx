@@ -40,7 +40,6 @@ export default function () {
     };
   }, []);
 
-
   const keyPressListener = (e: KeyboardEvent) => {
     switch (e.key.toLowerCase()) {
       case "f":
@@ -53,9 +52,9 @@ export default function () {
 
   const fullscreen = async () => {
     const web = WebviewWindow.getCurrent();
-    const isFullscreen = await web.isFullscreen()
+    const isFullscreen = await web.isFullscreen();
     web.setFullscreen(!isFullscreen);
-  }
+  };
 
   const requestData = async () => {
     emit("request_score_init_data");
@@ -98,30 +97,30 @@ export default function () {
     });
   };
 
-  const leftSponsor = () => {
-    return data.sponsor.filter((_, i) => i % 2 == 0);
-  };
+  // const leftSponsor = () => {
+  //   return data.sponsor.filter((_, i) => i % 2 == 0);
+  // };
 
-  const rightSponsor = () => {
-    return data.sponsor.filter((_, i) => i % 2 !== 0);
-  };
+  // const rightSponsor = () => {
+  //   return data.sponsor.filter((_, i) => i % 2 !== 0);
+  // };
 
   return (
     <div className={styles.scoreProjectionScreen}>
       <div className={styles.firstRow}>
         <ShortClock value={data.ticker} />
         <div className={styles.sponsorCon}>
-          {leftSponsor().map((s) => (
-            <img src={s.src} />
-          ))}
+          {/* {leftSponsor().map((s) => ( */}
+          <img src="/wave.png" />
+          {/* ))} */}
         </div>
         <div className={styles.timeAction}>
           <RemainingTime value={data.time} />
         </div>
         <div className={styles.sponsorCon}>
-          {rightSponsor().map((s) => (
-            <img src={s.src} />
-          ))}
+          {/* {rightSponsor().map((s) => ( */}
+          <img src={`/wave.png`} />
+          {/* ))} */}
         </div>
         <Round value={data.round} />
       </div>
@@ -138,7 +137,7 @@ export default function () {
         ]}
       />
       <div className={styles.fouls}>
-        <FoulMark team={data.foul} callback={() => { }} />
+        <FoulMark team={data.foul} callback={() => {}} />
         <ActionRow>
           <ActionRow>
             <DigitDisplay

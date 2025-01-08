@@ -25,6 +25,7 @@ export const configSlice = createSlice({
     // @ts-ignore
     updateConfig: (state, action: PayloadAction<ScoreBoardConfigData>) => {
       state = action.payload;
+      localStorage.setItem("scoreConfig", JSON.stringify(state));
     },
     updateTeam: (
       state,
@@ -32,13 +33,26 @@ export const configSlice = createSlice({
     ) => {
       state.team.one.name = action.payload.teamOne;
       state.team.two.name = action.payload.teamTwo;
+      localStorage.setItem("scoreConfig", JSON.stringify(state));
     },
     updateShortClock: (state, action: PayloadAction<number>) => {
       state.shortClock = action.payload;
+      localStorage.setItem("scoreConfig", JSON.stringify(state));
     },
     updateConfigShortClock: (state, action: PayloadAction<number>) => {
       state.configShortClock = action.payload;
       state.shortClock = action.payload;
+      localStorage.setItem("scoreConfig", JSON.stringify(state));
+    },
+    loadConfigData(state) {
+      const data = localStorage.getItem("scoreConfig");
+
+      if (data) {
+        const scoreConfig = JSON.parse(data);
+        for (const key in scoreConfig) {
+          (state as any)[key] = (scoreConfig as any)[key];
+        }
+      }
     },
   },
 });
@@ -48,5 +62,6 @@ export const {
   updateTeam,
   updateShortClock,
   updateConfigShortClock,
+  loadConfigData,
 } = configSlice.actions;
 export default configSlice.reducer;

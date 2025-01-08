@@ -8,6 +8,7 @@ import styles from "./ScoreboardScreen.module.scss";
 import { RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  loadDataData,
   markFoul,
   playTicker,
   removeSponsor,
@@ -33,6 +34,7 @@ import whistleIcon from "../../assets/icons/whistle.svg";
 import airhornIcon from "../../assets/icons/airhorn.svg";
 import { TeamEditCon } from "./edit-component/TeamEditCon";
 import {
+  loadConfigData,
   updateConfigShortClock,
   updateShortClock,
   updateTeam,
@@ -77,6 +79,11 @@ export default function () {
       }
     }
   };
+
+  useEffect(() => {
+    dispatch(loadDataData());
+    dispatch(loadConfigData());
+  }, []);
 
   useEffect(() => {
     refData.current = data;
@@ -157,7 +164,7 @@ export default function () {
 
     setTimeout(() => {
       const tickerValue = refData.current.ticker - 1;
-    
+
       if (tickerValue >= 0) {
         if (tickerValue === 0) {
           whistle();
