@@ -1,6 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen } from "@tauri-apps/api/event";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ShortClock } from "./components/ShortClock";
 import { Round } from "./components/Round";
 import { RemainingTime } from "./components/RemainingTime";
@@ -52,6 +58,7 @@ export default function () {
   const [edit, setEdit] = useState("");
   const refEdit = useRef(edit);
   const dispatch = useDispatch();
+  let playInterval: MutableRefObject<number | null> = useRef(null);
 
   const keyPressListener = (e: KeyboardEvent) => {
     if (refEdit.current === "") {
@@ -109,8 +116,10 @@ export default function () {
   }, []);
 
   useEffect(() => {
-    if (refData.current.play) {
-      ticker();
+    if (refData.current.play && playInterval.current === null) {
+      playInterval.current = setInterval(ticker, 1000);
+    } else {
+      stopInterval();
     }
   }, [data.play]);
 
@@ -156,33 +165,41 @@ export default function () {
   };
 
   const play = async () => {
-    await dispatch(playTicker(refConfig.current.shortClock));
+    if (data.time > 0) {
+      await dispatch(playTicker(refConfig.current.shortClock));
+    }
+  };
+
+  const stopInterval = async () => {
+    if (playInterval.current) {
+      clearInterval(playInterval.current);
+      playInterval.current = null;
+    }
   };
 
   const ticker = async () => {
     if (!refData.current.play) return;
 
-    setTimeout(() => {
-      const tickerValue = refData.current.ticker - 1;
+    const tickerValue = refData.current.ticker - 1;
 
-      if (tickerValue >= 0) {
-        if (tickerValue === 0) {
-          whistle();
-        }
-
-        const tickerData: TickerData = {
-          ticker: tickerValue,
-          time: refData.current.time - 1,
-        };
-
-        emit("score_ticker", tickerData);
-        dispatch(updateTicker(tickerValue));
-        setTimeout(ticker, 950);
-      } else {
-        console.log("stop ticker");
+    if (tickerValue >= 0) {
+      if (tickerValue === 0) {
+        whistle();
+        stopInterval();
         stop();
       }
-    }, 1000);
+
+      const tickerData: TickerData = {
+        ticker: tickerValue,
+        time: refData.current.time - 1,
+      };
+
+      emit("score_ticker", tickerData);
+      dispatch(updateTicker(tickerValue));
+    } else {
+      console.log("stop ticker");
+      stop();
+    }
   };
 
   async function airHorn() {
