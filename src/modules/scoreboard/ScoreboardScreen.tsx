@@ -112,7 +112,7 @@ export default function () {
     if (refData.current.play) {
       ticker();
     }
-  }, [data.play, data.ticker]);
+  }, [data.play]);
 
   const listenEvent = async () => {
     console.log("called");
@@ -177,6 +177,7 @@ export default function () {
 
         emit("score_ticker", tickerData);
         dispatch(updateTicker(tickerValue));
+        setTimeout(ticker, 950);
       } else {
         console.log("stop ticker");
         stop();

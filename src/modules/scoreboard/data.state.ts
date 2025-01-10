@@ -34,7 +34,9 @@ export const configSlice = createSlice({
     },
     updateTicker: (state, action: PayloadAction<number>) => {
       state.ticker = action.payload;
-      state.time--;
+      if (state.time > 0) {
+        state.time--;
+      }
       localStorage.setItem("scoreData", JSON.stringify(state));
     },
     updateTickerOnly: (state, action: PayloadAction<number>) => {
@@ -139,6 +141,6 @@ export const {
   updateTickerOnly,
   updateTimeOnly,
   resetData,
-  loadDataData
+  loadDataData,
 } = configSlice.actions;
 export default configSlice.reducer;
