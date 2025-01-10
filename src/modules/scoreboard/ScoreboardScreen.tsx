@@ -177,7 +177,7 @@ export default function () {
 
         emit("score_ticker", tickerData);
         dispatch(updateTicker(tickerValue));
-        setTimeout(ticker, 900);
+        setTimeout(ticker, 950);
       } else {
         console.log("stop ticker");
         stop();
