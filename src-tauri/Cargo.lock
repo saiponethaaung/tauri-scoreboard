@@ -4200,7 +4200,7 @@ dependencies = [
 
 [[package]]
 name = "tauri-scoreboard"
-version = "0.1.0"
+version = "0.1.5"
 dependencies = [
  "lazy_static",
  "rodio",
