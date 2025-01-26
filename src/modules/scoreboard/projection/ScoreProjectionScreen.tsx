@@ -111,7 +111,7 @@ export default function () {
         <ShortClock value={data.ticker} />
         <div className={styles.sponsorCon}>
           {/* {leftSponsor().map((s) => ( */}
-          <img src="/wave.png" />
+          <img src="/kfc.png" />
           {/* ))} */}
         </div>
         <div className={styles.timeAction}>
@@ -119,7 +119,7 @@ export default function () {
         </div>
         <div className={styles.sponsorCon}>
           {/* {rightSponsor().map((s) => ( */}
-          <img src={`/wave.png`} />
+          <img src={`/kfc.png`} />
           {/* ))} */}
         </div>
         <Round value={data.round} />
