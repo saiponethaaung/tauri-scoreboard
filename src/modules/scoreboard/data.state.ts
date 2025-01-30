@@ -20,6 +20,7 @@ const initialState: ScoreBoardData = {
   ticker: 24,
   time: 600,
   sponsor: [],
+  fontScale: 1.0,
 };
 
 export const configSlice = createSlice({
@@ -123,6 +124,10 @@ export const configSlice = createSlice({
         }
       }
     },
+    fontScaleUpdate(state, action: PayloadAction<number>) {
+      state.fontScale = action.payload;
+      localStorage.setItem("scoreData", JSON.stringify(state));
+    },
   },
 });
 
@@ -142,5 +147,6 @@ export const {
   updateTimeOnly,
   resetData,
   loadDataData,
+  fontScaleUpdate,
 } = configSlice.actions;
 export default configSlice.reducer;

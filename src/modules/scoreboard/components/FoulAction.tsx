@@ -3,11 +3,19 @@ import styles from "./FoulAction.module.scss";
 interface IProps {
   team: "one" | "two" | null;
   callback: (value: "one" | "two" | null) => void;
+  scale?: number;
 }
 
-export function FoulMark({ team, callback }: IProps) {
+export function FoulMark({ team, callback, scale }: IProps) {
   return (
-    <div className={styles.foulMarkCon}>
+    <div
+      className={styles.foulMarkCon}
+      style={
+        {
+          "--scale": scale ?? 1,
+        } as React.CSSProperties
+      }
+    >
       <button
         type="button"
         style={{ color: team === "one" ? "red" : "grey" }}

@@ -4,13 +4,13 @@
   justify-content: center;
   gap: 1vh;
   margin-bottom: 2vh;
-  font-size: 5vh;
+  font-size: calc(5vh * var(--scale))!important;
   font-family: "text" !important;
   div {
     font-family: "text" !important;
   }
   button {
-    font-size: 7vh;
+    font-size: calc(7vh * var(--scale))!important;
     background-color: transparent;
     border: none;
     text-decoration: none;

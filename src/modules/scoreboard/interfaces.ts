@@ -23,6 +23,7 @@ export interface ScoreBoardData {
   foul: null | "one" | "two";
   round: number;
   play: boolean;
+  fontScale: number;
   sponsor: Sponsor[];
 }
 

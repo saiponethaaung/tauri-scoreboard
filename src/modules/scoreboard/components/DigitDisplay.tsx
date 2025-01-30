@@ -5,13 +5,20 @@ interface IProps {
   color?: string;
   fontSize?: string;
   singleDigit?: boolean;
+  scale?: number;
 }
 export function DigitDisplay(props: IProps) {
   return (
     <div className={styles.digitDisplayRootCon}>
       <div
         className={styles.digitDisplayCon}
-        style={{ "--fontSize": props.fontSize ?? "12vh" } as React.CSSProperties}
+        style={
+          {
+            "--fontSize": `calc(${props.fontSize ?? "12vh"} * ${
+              props.scale ?? 1
+            })`,
+          } as React.CSSProperties
+        }
       >
         <div className={styles.ddPlaceholder}>0</div>
         <div
@@ -26,7 +33,11 @@ export function DigitDisplay(props: IProps) {
         <div
           className={styles.digitDisplayCon}
           style={
-            { "--fontSize": props.fontSize ?? "12vh" } as React.CSSProperties
+            {
+              "--fontSize": `calc(${props.fontSize ?? "12vh"} * ${
+                props.scale ?? 1
+              })`,
+            } as React.CSSProperties
           }
         >
           <div className={styles.ddPlaceholder}>0</div>

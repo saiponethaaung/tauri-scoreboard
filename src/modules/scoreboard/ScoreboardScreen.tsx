@@ -14,6 +14,7 @@ import styles from "./ScoreboardScreen.module.scss";
 import { RootState } from "../../store";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  fontScaleUpdate,
   loadDataData,
   markFoul,
   playTicker,
@@ -63,7 +64,7 @@ export default function () {
   const keyPressListener = (e: KeyboardEvent) => {
     if (refEdit.current === "") {
       e.preventDefault();
-      console.log("key", e.key.toLocaleLowerCase());
+
       switch (e.key.toLowerCase()) {
         case "w":
           whistle();
@@ -339,6 +340,17 @@ export default function () {
     }, 1000);
   }
 
+  async function adjustFontSize(size: number) {
+    let newSize = data.fontScale + size;
+
+    if (newSize < 1) {
+      newSize = 1;
+    }
+
+    dispatch(fontScaleUpdate(newSize));
+    emit("fontscale", newSize);
+  }
+
   return (
     <div className={styles.sbContainer}>
       <div className={styles.firstRow}>
@@ -385,20 +397,33 @@ export default function () {
           </ActionRow>
           <div>
             <div
-              onClick={() => {
-                if (data.play) {
-                  stop();
-                } else {
-                  play();
-                }
-              }}
               style={{
-                fontSize: "6vh",
-                cursor: "pointer",
-                textAlign: "center",
+                display: "flex",
+                justifyContent: "center",
+                margin: "10px 0",
               }}
             >
-              {data.play ? "Pause" : "Play"}
+              <button
+                onClick={() => {
+                  if (data.play) {
+                    stop();
+                  } else {
+                    play();
+                  }
+                }}
+                type="button"
+                style={{
+                  fontSize: "6vh",
+                  cursor: "pointer",
+                  textAlign: "center",
+                  margin: "0 auto",
+                  borderRadius: "5px",
+                  background: "white",
+                  border: "none",
+                }}
+              >
+                {data.play ? "Pause" : "Play"}
+              </button>
             </div>
             <FoulMark team={data.foul} callback={foulMark} />
             <ActionRow>
@@ -424,7 +449,7 @@ export default function () {
                   -
                 </ActionIcon>
               </ActionRow>
-              <div style={{ fontSize: "6vh" }}>X</div>
+              <div style={{ fontSize: "6vh", margin: "0 15px" }}>X</div>
               <ActionRow>
                 <ActionIcon
                   callback={() => {
@@ -489,6 +514,12 @@ export default function () {
           </button>
           <button onClick={reset} type="button">
             Reset
+          </button>
+          <button onClick={() => adjustFontSize(0.1)} type="button">
+            Display Font Size +
+          </button>
+          <button onClick={() => adjustFontSize(-0.1)} type="button">
+            Display Font Size -
           </button>
         </div>
       </div>

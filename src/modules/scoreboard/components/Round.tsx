@@ -2,6 +2,7 @@ import styles from "./Round.module.scss";
 
 interface IProps {
   value: number;
+  scale?: number;
 }
 
 export function Round({ value }: IProps) {

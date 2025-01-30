@@ -1,5 +1,9 @@
 .remainingTimeCon {
   display: flex;
-  font-size: 8vh;
+  font-size: calc(8vh * var(--scale));
   color: red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }

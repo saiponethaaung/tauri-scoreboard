@@ -8,6 +8,7 @@ import { Round } from "../components/Round";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import {
+  fontScaleUpdate,
   removeSponsor,
   setData,
   updateFoul,
@@ -95,6 +96,9 @@ export default function () {
     listen("round_update", (d: Event<number>) => {
       dispatch(updateRound(d.payload));
     });
+    listen("fontscale", (d: Event<number>) => {
+      dispatch(fontScaleUpdate(d.payload));
+    });
   };
 
   // const leftSponsor = () => {
@@ -106,23 +110,30 @@ export default function () {
   // };
 
   return (
-    <div className={styles.scoreProjectionScreen}>
+    <div
+      className={styles.scoreProjectionScreen}
+      style={
+        {
+          "--scale": data.fontScale ?? 1,
+        } as React.CSSProperties
+      }
+    >
       <div className={styles.firstRow}>
-        <ShortClock value={data.ticker} />
+        <ShortClock value={data.ticker} scale={data.fontScale} />
         <div className={styles.sponsorCon}>
           {/* {leftSponsor().map((s) => ( */}
           <img src="/kfc.png" />
           {/* ))} */}
         </div>
         <div className={styles.timeAction}>
-          <RemainingTime value={data.time} />
+          <RemainingTime value={data.time} scale={data.fontScale} />
         </div>
         <div className={styles.sponsorCon}>
           {/* {rightSponsor().map((s) => ( */}
           <img src={`/kfc.png`} />
           {/* ))} */}
         </div>
-        <Round value={data.round} />
+        <Round value={data.round} scale={data.fontScale} />
       </div>
       <ScoreInfo
         team={[
@@ -135,9 +146,10 @@ export default function () {
             score: data.team.two.score,
           },
         ]}
+        scale={data.fontScale}
       />
       <div className={styles.fouls}>
-        <FoulMark team={data.foul} callback={() => {}} />
+        <FoulMark team={data.foul} callback={() => {}} scale={data.fontScale} />
         <ActionRow>
           <ActionRow>
             <DigitDisplay
@@ -145,15 +157,24 @@ export default function () {
               fontSize="8vh"
               value={data.team.one.foul}
               singleDigit={data.team.one.foul < 10}
+              scale={data.fontScale}
             />
           </ActionRow>
-          <div style={{ fontSize: "6vh" }}>X</div>
+          <div
+            style={{
+              fontSize: `calc(6vh * ${data.fontScale})`,
+              margin: "0 15px",
+            }}
+          >
+            X
+          </div>
           <ActionRow>
             <DigitDisplay
               color="yellow"
               fontSize="8vh"
               value={data.team.two.foul}
               singleDigit={data.team.two.foul < 10}
+              scale={data.fontScale}
             />
           </ActionRow>
         </ActionRow>

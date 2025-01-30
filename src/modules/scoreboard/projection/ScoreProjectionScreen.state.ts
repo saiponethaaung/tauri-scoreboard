@@ -28,6 +28,7 @@ const initialState: ScoreInitData = {
       logo: null,
     },
   },
+  fontScale: 1.0,
   sponsor: [],
 };
 
@@ -81,6 +82,9 @@ export const scoreDisplaySlice = createSlice({
     updateRound: (state, action: PayloadAction<number>) => {
       state.round = action.payload;
     },
+    fontScaleUpdate(state, action: PayloadAction<number>) {
+      state.fontScale = action.payload;
+    },
   },
 });
 
@@ -94,5 +98,6 @@ export const {
   removeSponsor,
   updateTeam,
   updateRound,
+  fontScaleUpdate,
 } = scoreDisplaySlice.actions;
 export default scoreDisplaySlice.reducer;
