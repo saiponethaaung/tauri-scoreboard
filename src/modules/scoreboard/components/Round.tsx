@@ -5,7 +5,7 @@ interface IProps {
   scale?: number;
 }
 
-export function Round({ value }: IProps) {
+export function Round({ value, scale }: IProps) {
   const toOrdinal = (num: number) => {
     switch (num % 10) {
       case 1:
@@ -19,5 +19,16 @@ export function Round({ value }: IProps) {
     }
   };
 
-  return <div className={styles.roundCon}>{toOrdinal(value)}</div>;
+  return (
+    <div
+      className={styles.roundCon}
+      style={
+        {
+          "--scale": scale ?? 1,
+        } as React.CSSProperties
+      }
+    >
+      {toOrdinal(value)}
+    </div>
+  );
 }

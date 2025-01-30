@@ -1,4 +1,4 @@
 .roundCon {
   font-family: "text" !important;
-  font-size: 10vh;
+  font-size: calc(10vh * var(--scale));
 }
