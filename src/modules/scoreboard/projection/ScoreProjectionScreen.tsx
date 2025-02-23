@@ -1,6 +1,6 @@
 import { emit, Event, listen } from "@tauri-apps/api/event";
-import { useEffect } from "react";
-import { ScoreInitData, Sponsor, TickerData } from "../interfaces";
+import { useEffect, useState } from "react";
+import { ScoreInitData, TickerData } from "../interfaces";
 import styles from "./ScoreProjectionScreen.module.scss";
 import { ShortClock } from "../components/ShortClock";
 import { RemainingTime } from "../components/RemainingTime";
@@ -15,7 +15,6 @@ import {
   updateFoulTeam,
   updateRound,
   updateScore,
-  updateSponsor,
   updateTeam,
   updateTime,
 } from "./ScoreProjectionScreen.state";
@@ -24,15 +23,20 @@ import { ActionRow } from "../components/ActionRow";
 import { DigitDisplay } from "../components/DigitDisplay";
 import { FoulMark } from "../components/FoulAction";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { BaseDirectory, readDir, readFile } from "@tauri-apps/plugin-fs";
+import { documentDir } from "@tauri-apps/api/path";
+import { path } from "@tauri-apps/api";
 
 export default function () {
   const data = useSelector((state: RootState) => state.scoreDisplayReducer);
+  const [files, setFiles] = useState<Array<string>>([]);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     listenEvent();
     requestData();
+    getFiles();
 
     window.addEventListener("keypress", keyPressListener);
 
@@ -74,9 +78,8 @@ export default function () {
         dispatch(updateScore(d.payload));
       }
     );
-    listen("sponsor", (d: Event<Sponsor>) => {
-      console.log("sponsor added");
-      dispatch(updateSponsor(d.payload));
+    listen("sponsor", () => {
+      getFiles();
     });
     listen("clean_sponsor", () => {
       dispatch(removeSponsor());
@@ -101,13 +104,60 @@ export default function () {
     });
   };
 
-  // const leftSponsor = () => {
-  //   return data.sponsor.filter((_, i) => i % 2 == 0);
-  // };
+  const getFiles = async () => {
+    const results: string[] = [];
 
-  // const rightSponsor = () => {
-  //   return data.sponsor.filter((_, i) => i % 2 !== 0);
-  // };
+    const files = await readDir(`scoreboard/sponsor`, {
+      baseDir: BaseDirectory.Document,
+    });
+    const docDir = await documentDir();
+
+    const sortedFiles = files.sort((a, b) => (a.name > b.name ? 1 : -1));
+    for (const f of sortedFiles) {
+      if (f.name.split(".")[0] == "") continue;
+      const filePath = await path.join(docDir, "scoreboard/sponsor", f.name);
+      const file = await readFile(filePath);
+      const base64String = uint8ArrayToBase64(file);
+
+      results.push(`data:image/${f.name.split(".")[1]};base64,${base64String}`);
+    }
+
+    setFiles(results);
+  };
+
+  // Function to Convert Uint8Array to Base64
+  function uint8ArrayToBase64(uint8Array: Uint8Array): string {
+    let binary = "";
+    uint8Array.forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
+
+    return btoa(binary);
+  }
+
+  const leftSponsor = () => {
+    return (
+      <>
+        {files
+          .filter((_, i) => i % 2 == 0)
+          .map((s) => (
+            <img src={s} />
+          ))}
+      </>
+    );
+  };
+
+  const rightSponsor = () => {
+    return (
+      <>
+        {files
+          .filter((_, i) => i % 2 != 0)
+          .map((s) => (
+            <img src={s} />
+          ))}
+      </>
+    );
+  };
 
   return (
     <div
@@ -120,19 +170,11 @@ export default function () {
     >
       <div className={styles.firstRow}>
         <ShortClock value={data.ticker} scale={data.fontScale} />
-        <div className={styles.sponsorCon}>
-          {/* {leftSponsor().map((s) => ( */}
-          <img src="/kfc.png" />
-          {/* ))} */}
-        </div>
+        <div className={styles.sponsorCon}>{leftSponsor()}</div>
         <div className={styles.timeAction}>
           <RemainingTime value={data.time} scale={data.fontScale} />
         </div>
-        <div className={styles.sponsorCon}>
-          {/* {rightSponsor().map((s) => ( */}
-          <img src={`/kfc.png`} />
-          {/* ))} */}
-        </div>
+        <div className={styles.sponsorCon}>{rightSponsor()}</div>
         <Round value={data.round} scale={data.fontScale} />
       </div>
       <ScoreInfo

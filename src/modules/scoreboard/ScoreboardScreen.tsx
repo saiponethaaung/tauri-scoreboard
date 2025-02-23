@@ -18,14 +18,12 @@ import {
   loadDataData,
   markFoul,
   playTicker,
-  removeSponsor,
   resetData,
   stopTicker,
   tickerReset,
   updateFoul,
   updateRound,
   updateScore,
-  updateSponsor,
   updateTicker,
   updateTickerOnly,
   updateTimeOnly,
@@ -50,6 +48,14 @@ import { QuartarEditCon } from "./edit-component/QuartarEditCon";
 import { ShortClockEditCon } from "./edit-component/ShortClockEditCon";
 import { DurationEditCon } from "./edit-component/DurationClockEditCon";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
+import {
+  BaseDirectory,
+  exists,
+  mkdir,
+  readDir,
+  remove,
+  writeFile,
+} from "@tauri-apps/plugin-fs";
 
 export default function () {
   const config = useSelector((state: RootState) => state.scoreConfigReducer);
@@ -252,32 +258,81 @@ export default function () {
 
   async function sponsorUpdate(e: ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
+    // const dataPath = await invoke("get_path");
+    // console.log("dataPath", dataPath);
+
+    // console.log("BaseDirectory.AppData", BaseDirectory.AppData);
+
+    const folderExists = await exists(`scoreboard/sponsor`, {
+      baseDir: BaseDirectory.Document,
+    });
+
+    if (!folderExists) {
+      await mkdir(`scoreboard/sponsor`, {
+        recursive: true,
+        baseDir: BaseDirectory.Document,
+      });
+    }
+
+    // const file = await open(`scoreboard/bar.txt`, {
+    //   create: true,
+    //   write: true,
+    //   baseDir: BaseDirectory.Document,
+    // });
+    // await file.write(new TextEncoder().encode("Hello world"));
+    // await file.close();
+
     const input = e.target;
 
     if (input.files) {
       const files = Array.from(input.files);
 
       for (const file of files) {
+        // const fileToWrite = await create(`scoreboard/sponsor/${file.name}`, {
+        //   baseDir: BaseDirectory.Document,
+        // });
         const reader = new FileReader();
 
-        reader.onload = (e) => {
-          const data = e.target?.result as string;
-          const sponsor = {
-            timestamp: (new Date().getTime() + 1).toString(),
-            src: data,
-          };
-          emit("sponsor", sponsor);
-          dispatch(updateSponsor(sponsor));
+        reader.onload = async (e) => {
+          const buffer = new Uint8Array(e.target?.result as ArrayBuffer);
+          try {
+            await writeFile(
+              `scoreboard/sponsor/${new Date().getTime() + 1}.${
+                file.name.split(".")[1]
+              }`,
+              buffer,
+              {
+                baseDir: BaseDirectory.Document,
+              }
+            );
+
+            console.log("Image saved successfully!");
+          } catch (error) {
+            console.error("Error saving image:", error);
+          }
+
+          emit("sponsor");
         };
 
-        reader.readAsDataURL(file);
+        reader.readAsArrayBuffer(file);
       }
     }
   }
 
   async function cleanSponsor() {
-    emit("clean_sponsor");
-    dispatch(removeSponsor());
+    const files = await readDir(`scoreboard/sponsor`, {
+      baseDir: BaseDirectory.Document,
+    });
+
+    for (const file of files) {
+      if (file.name.split(".")[0] == "") continue;
+
+      await remove(`scoreboard/sponsor/${file.name}`, {
+        baseDir: BaseDirectory.Document,
+      });
+    }
+
+    emit("sponsor");
   }
 
   async function updateTeamData(team1: string, team2: string) {
